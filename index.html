@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日期工具 - 累積倒數版</title>
+    <title>阿簽日期與時間工具</title>
     <style>
         :root {
             --bg-color: #f5f7fa;
@@ -53,7 +53,7 @@
 
         .container {
             background: var(--container-bg);
-            padding: 2rem;
+            padding: 1.5rem 2rem;
             border-radius: 16px;
             box-shadow: var(--shadow);
             width: 100%;
@@ -62,8 +62,12 @@
             box-sizing: border-box;
         }
 
-        h2 { border-left: 5px solid var(--accent-color); padding-left: 15px; margin: 0 0 20px 0; font-size: 1.3rem; }
+        h2 { border-left: 5px solid var(--accent-color); padding-left: 15px; margin: 0 0 15px 0; font-size: 1.3rem; }
         
+        /* 現在時刻樣式 */
+        #currentTimePanel { text-align: center; }
+        .clock { font-family: 'Courier New', monospace; font-size: 1.8rem; font-weight: bold; color: var(--accent-color); margin-top: 5px; }
+
         select, input, button {
             width: 100%;
             padding: 12px;
@@ -131,6 +135,12 @@
 
     <button class="theme-toggle" onclick="toggleTheme()">切換主題顏色</button>
 
+    <div class="container" id="currentTimePanel">
+        <div style="font-size: 0.9rem; opacity: 0.8;">現在時刻</div>
+        <div id="liveClock" class="clock">00:00:00</div>
+        <div id="liveDate" style="font-size: 0.9rem; margin-top: 5px;">2026年01月01日</div>
+    </div>
+
     <div id="testPanel" class="container">
         <p><strong>🛠️ 模擬測試面板</strong></p>
         <button style="width:auto; padding:5px 10px;" onclick="setMock(12, 28)">模擬 12/28</button>
@@ -168,6 +178,20 @@
 
     <script>
         let mockM = null; let mockD = null;
+
+        // 更新即時時鐘
+        function updateLiveClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            const y = now.getFullYear();
+            const mo = now.getMonth() + 1;
+            const d = now.getDate();
+            
+            document.getElementById('liveClock').innerText = `${h}:${m}:${s}`;
+            document.getElementById('liveDate').innerText = `${y}年${mo}月${d}日`;
+        }
 
         function toggleTheme() {
             const body = document.body;
@@ -227,7 +251,6 @@
                 const nextYear = new Date(now.getFullYear() + 1, 0, 1);
                 const diffMs = nextYear - now;
                 
-                // 核心累積邏輯
                 const totalS = Math.floor(diffMs / 1000);
                 const totalM = Math.floor(totalS / 60);
                 const totalH = Math.floor(totalS / 3600);
@@ -267,9 +290,17 @@
             if(val) { document.getElementById('endDate').value = val; calculateDiff(); }
         }
 
+        // 初始化
         document.getElementById('startDate').valueAsDate = new Date();
         initSelect();
-        setInterval(updateCountdown, 1000);
+        
+        // 設定每秒更新
+        setInterval(() => {
+            updateLiveClock();
+            updateCountdown();
+        }, 1000);
+        
+        updateLiveClock();
         updateCountdown();
     </script>
 </body>
