@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日期計算器與時間倒數</title>
+    <style>
+        :root { --primary: #2c3e50; --accent: #3498db; --bg: #f5f7fa; }
+        body { font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; background: var(--bg); color: var(--primary); display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 550px; margin-bottom: 20px; }
+        h2 { border-left: 5px solid var(--accent); padding-left: 15px; margin: 0 0 20px 0; font-size: 1.4rem; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+        input, select, button { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccd1d9; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+        button { background: var(--accent); color: white; border: none; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        button:hover { background: #2980b9; }
+        .result { margin-top: 20px; padding: 20px; background: #f8fbff; border: 1px dashed var(--accent); border-radius: 8px; font-size: 1.2rem; text-align: center; }
+        #newYearSection { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; display: none; text-align: center; }
+        .timer-display { font-family: monospace; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; margin-top: 10px; color: #ffd700; }
+        .sub-timer { font-size: 0.9rem; color: #ddd; margin-top: 5px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>📅 日期計算</h2>
+        <div class="input-group">
+            <label>快速選擇未來目標：</label>
+            <select id="quickSelect" onchange="applyQuickSelect()">
+                <option value="">-- 請選擇 --</option>
+                <optgroup label="✨ 元旦倒數" id="opt-newyear"></optgroup>
+                <optgroup label="📝 國中會考 (預估週六)" id="opt-cap"></optgroup>
+                <optgroup label="🎓 大學學測 (預估週五)" id="opt-gsat"></optgroup>
+                <optgroup label="🧪 分科測驗 (固定 7/12)" id="opt-ast"></optgroup>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>開始日期：</label>
+            <input type="date" id="startDate">
+        </div>
+        <div class="input-group">
+            <label>目標日期：</label>
+            <input type="date" id="endDate">
+        </div>
+        <button onclick="calculateDiff()">立即計算</button>
+        <div id="dateResult" class="result">請選擇日期</div>
+    </div>
+
+    <div id="newYearSection" class="container">
+        <h2 style="color: white; border-color: #ff4757;">🎊 新年倒數計時</h2>
+        <div id="countdownDisplay" class="timer-display">--</div>
+    </div>
+
+    <script>
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const quickSelect = document.getElementById('quickSelect');
+
+        // 初始化：設定今天日期
+        const today = new Date();
+        startDateInput.valueAsDate = today;
+
+        // 輔助函數：尋找某日期後的第一個特定星期幾 (0=日, 5=五, 6=六)
+        function getNextDayOfWeek(year, month, day, dayOfWeek) {
+            let d = new Date(year, month - 1, day);
+            while (d.getDay() !== dayOfWeek) {
+                d.setDate(d.getDate() + 1);
+            }
+            return d;
+        }
+
+        // 動態生成選單項目
+        function initSelect() {
+            const currentYear = today.getFullYear();
+            
+            const groups = {
+                'newyear': { el: document.getElementById('opt-newyear'), dates: [] },
+                'cap': { el: document.getElementById('opt-cap'), dates: [] },
+                'gsat': { el: document.getElementById('opt-gsat'), dates: [] },
+                'ast': { el: document.getElementById('opt-ast'), dates: [] }
+            };
+
+            for (let i = 0; i < 4; i++) {
+                let year = currentYear + i;
+
+                // 1. 元旦
+                groups.newyear.dates.push({ name: `${year + 1} 元旦`, date: new Date(year + 1, 0, 1) });
+
+                // 2. 會考 (每年5/15以後的第一個週六)
+                groups.cap.dates.push({ name: `${year} 會考`, date: getNextDayOfWeek(year, 5, 15, 6) });
+
+                // 3. 學測 (每年1/15以後的第一個週五)
+                groups.gsat.dates.push({ name: `${year} 學測`, date: getNextDayOfWeek(year, 1, 15, 5) });
+
+                // 4. 分科 (固定7/12)
+                groups.ast.dates.push({ name: `${year} 分科`, date: new Date(year, 6, 12) });
+            }
+
+            // 過濾掉已過去的日期，並渲染到 HTML
+            Object.keys(groups).forEach(key => {
+                groups[key].dates.forEach(item => {
+                    if (item.date >= today.setHours(0,0,0,0)) {
+                        const dateStr = item.date.toISOString().split('T')[0];
+                        const option = new Option(`${item.name} (${dateStr})`, dateStr);
+                        groups[key].el.appendChild(option);
+                    }
+                });
+            });
+        }
+
+        function applyQuickSelect() {
+            if(quickSelect.value) {
+                endDateInput.value = quickSelect.value;
+                calculateDiff();
+            }
+        }
+
+        function calculateDiff() {
+            const start = new Date(startDateInput.value);
+            const end = new Date(endDateInput.value);
+            if (isNaN(start) || isNaN(end)) return;
+
+            const diffDays = Math.ceil((end - start) / 86400000);
+            const resultEl = document.getElementById('dateResult');
+            
+            if (diffDays > 0) resultEl.innerHTML = `還有 <strong>${diffDays}</strong> 天`;
+            else if (diffDays < 0) resultEl.innerHTML = `已過去 <strong>${Math.abs(diffDays)}</strong> 天`;
+            else resultEl.innerText = "就是今天！";
+        }
+
+        function updateNewYear() {
+            const now = new Date();
+            const isActive = (now.getMonth() === 11 && now.getDate() >= 25);
+            const section = document.getElementById('newYearSection');
+            
+            if (!isActive) { section.style.display = "none"; return; }
+            
+            section.style.display = "block";
+            const nextYear = new Date(now.getFullYear() + 1, 0, 1);
+            const totalSec = Math.floor((nextYear - now) / 1000);
+            
+            const d = Math.floor(totalSec / 86400), h = Math.floor((totalSec % 86400) / 3600), m = Math.floor((totalSec % 3600) / 60), s = totalSec % 60;
+
+            const display = document.getElementById('countdownDisplay');
+            if (now.getDate() === 31) {
+                display.innerHTML = `<div style="font-size:2rem">${totalSec} 秒</div><div class="sub-timer">${m}分${s}秒</div><div class="sub-timer">${h}時${m}分${s}秒</div>`;
+            } else {
+                display.innerHTML = `<div style="font-size:1.8rem">${d}日 ${h}時 ${m}分</div>`;
+            }
+        }
+
+        initSelect();
+        setInterval(updateNewYear, 1000);
+        updateNewYear();
+    </script>
+</body>
+</html>
