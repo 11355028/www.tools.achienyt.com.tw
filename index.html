@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>阿簽線上工具箱</title>
+    <title>阿簽線上工具箱 - 完整最終版</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.1/math.js"></script>
     <style>
         :root {
             --bg-color: #1a1515;
             --card-bg: #2d2424;
             --text-color: #ffffff;
-            --primary-accent: #ff4444; 
-            --secondary-accent: #00d2ff; 
+            --primary-accent: #ff4444; /* 亮紅色 */
+            --secondary-accent: #00d2ff; /* 亮藍色 */
             --border-color: #4a3b3b;
             --led-red: #ff4d4d;
             --clock-color: #FFFF00; 
@@ -59,34 +59,18 @@
 
         .container.active { display: block; }
 
-        #home { 
-            text-align: center; background: transparent; border: none; padding-top: 10vh; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 100%; max-width: none;
-        }
+        #home { text-align: center; border: none; padding-top: 10vh; width: 100%; max-width: none; }
+        .huge-clock { font-size: clamp(4rem, 18vw, 12rem); font-weight: 900; color: var(--clock-color); text-shadow: 3px 3px 0px var(--secondary-accent); }
+        .huge-date { font-size: 2.5rem; margin: 20px auto; font-weight: bold; border-top: 2px solid var(--secondary-accent); padding-top: 10px; }
 
-        .huge-clock { 
-            font-size: clamp(4rem, 18vw, 12rem); font-weight: 900; 
-            color: var(--clock-color); line-height: 1.1; margin: 0 auto;
-            text-shadow: 3px 3px 0px var(--secondary-accent);
-        }
-
-        .huge-date { 
-            font-size: 2.5rem; margin: 20px auto; font-weight: bold; 
-            border-top: 2px solid var(--secondary-accent); padding-top: 10px;
-        }
-
-        h2 { border-left: 8px solid var(--secondary-accent); padding-left: 12px; color: var(--primary-accent); }
+        h2 { border-left: 8px solid var(--secondary-accent); padding-left: 12px; color: var(--primary-accent); margin-top: 30px;}
+        input { width: 100%; padding: 14px; margin: 5px 0; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); font-size: 1rem; box-sizing: border-box;}
         
-        button { 
-            background: var(--secondary-accent); border: none; cursor: pointer; font-weight: bold; 
-            color: var(--btn-text); padding: 14px; width: 100%; margin: 5px 0; transition: 0.2s;
-        }
+        button { background: var(--secondary-accent); border: none; cursor: pointer; font-weight: bold; color: var(--btn-text); padding: 14px; width: 100%; margin: 5px 0; transition: 0.2s; }
         button:hover { filter: brightness(1.1); transform: translateY(-2px); }
-        
         .btn-maroon { background: var(--primary-accent); color: #ffffff !important; }
 
-        .calc-screen { width: 100%; background: #000; color: var(--led-red); text-align: right; padding: 20px; font-size: 2.5rem; font-family: monospace; border: 2px solid var(--secondary-accent); margin-bottom: 10px; box-sizing: border-box; }
+        .calc-screen { width: 100%; background: #000; color: var(--led-red); text-align: right; padding: 20px; font-size: 2.5rem; font-family: monospace; border: 2px solid var(--secondary-accent); margin-bottom: 10px; box-sizing: border-box; min-height: 80px;}
         .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
         
         .bsk-board { background: #000; border: 4px solid var(--primary-accent); padding: 15px; display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 10px; text-align: center; }
@@ -109,53 +93,95 @@
 
     <div id="home" class="container active">
         <div class="huge-clock" id="liveClock">00:00:00</div>
-        <div class="huge-date" id="liveDate">2026/04/16</div>
-        <div style="margin-top: 50px;">
-            <button onclick="toggleMode()" style="width: auto; padding: 10px 30px;">切換 深淺色模式</button>
+        <div class="huge-date" id="liveDate">2026 / 4 / 16</div>
+        <button onclick="toggleMode()" style="width: auto; padding: 10px 30px; margin-top: 30px;">切換 深淺色模式</button>
+    </div>
+
+    <div id="calc" class="container">
+        <h2>🧮 綜合計算機</h2>
+        <div class="calc-screen" id="calcDisplay">0</div>
+        <div class="calc-grid">
+            <button onclick="cClear()" class="btn-maroon">AC</button>
+            <button onclick="cIn('(')">(</button><button onclick="cIn(')')">)</button>
+            <button onclick="cIn('/')" class="btn-maroon">÷</button>
+            <button onclick="cIn('7')">7</button><button onclick="cIn('8')">8</button><button onclick="cIn('9')">9</button>
+            <button onclick="cIn('*')" class="btn-maroon">×</button>
+            <button onclick="cIn('4')">4</button><button onclick="cIn('5')">5</button><button onclick="cIn('6')">6</button>
+            <button onclick="cIn('-')" class="btn-maroon">-</button>
+            <button onclick="cIn('1')">1</button><button onclick="cIn('2')">2</button><button onclick="cIn('3')">3</button>
+            <button onclick="cIn('+')" class="btn-maroon">+</button>
+            <button onclick="cIn('0')" style="grid-column: span 2">0</button>
+            <button onclick="cIn('.')">.</button>
+            <button onclick="cEval()" style="background: var(--led-red); color: white;">=</button>
         </div>
     </div>
 
     <div id="games" class="container">
-        <h2>🏀 籃球專業面板</h2>
+        <h2>🏀 籃球面板</h2>
         <div class="bsk-board">
             <div>
-                <div style="color: #fff; font-size: 0.8rem;">HOME</div>
+                <div style="color:#fff; font-size:0.7rem;">HOME</div>
                 <div class="bsk-score" id="scA">00</div>
-                <div class="bsk-btns">
-                    <button onclick="addB('A',1)">+1</button><button onclick="addB('A',2)">+2</button>
-                </div>
+                <div class="bsk-btns"><button onclick="addB('A',1)">+1</button><button onclick="addB('A',2)">+2</button></div>
                 <button onclick="addB('A',3)">+3</button>
                 <button onclick="foul('A')" class="btn-maroon">犯規: <span id="fA">0</span></button>
             </div>
-            <div style="display: flex; flex-direction: column; justify-content: space-around;">
-                <div id="pVal" style="background: var(--secondary-accent); color:var(--btn-text); font-weight:bold; padding: 5px;">第 1 節</div>
-                <div id="gtDisplay" style="font-size: 2rem; color: var(--led-red); font-family: monospace;">12:00</div>
+            <div style="display:flex; flex-direction:column; justify-content:center; gap:10px;">
+                <div id="gtDisplay" style="font-size:2rem; color:var(--led-red); font-family:monospace;">12:00</div>
                 <button onclick="gtToggle()" id="gtBtn">START</button>
             </div>
             <div>
-                <div style="color: #fff; font-size: 0.8rem;">GUEST</div>
+                <div style="color:#fff; font-size:0.7rem;">GUEST</div>
                 <div class="bsk-score" id="scB">00</div>
-                <div class="bsk-btns">
-                    <button onclick="addB('B',1)">+1</button><button onclick="addB('B',2)">+2</button>
-                </div>
+                <div class="bsk-btns"><button onclick="addB('B',1)">+1</button><button onclick="addB('B',2)">+2</button></div>
                 <button onclick="addB('B',3)">+3</button>
                 <button onclick="foul('B')" class="btn-maroon">犯規: <span id="fB">0</span></button>
             </div>
         </div>
-
-        <h2 style="margin-top:30px;">🏸 羽排簡易計分</h2>
-        <div style="display:grid; grid-template-columns: 1fr auto 1fr; align-items:center; text-align:center;">
+        <h2>🏸 羽排計分</h2>
+        <div style="display:grid; grid-template-columns: 1fr auto 1fr; text-align:center; align-items:center;">
             <div><div id="gA" style="font-size:4rem">0</div><button onclick="gs('A',1)">POINT</button></div>
-            <div style="font-size:2rem; padding:10px; color: var(--primary-accent);">VS</div>
+            <div style="font-size:1.5rem; color:var(--primary-accent);">VS</div>
             <div><div id="gB" style="font-size:4rem">0</div><button onclick="gs('B',1)">POINT</button></div>
         </div>
-        <button onclick="resetShuttle()" class="btn-maroon" style="margin-top:20px;">重設比分</button>
+        <button onclick="resetShuttle()" class="btn-maroon" style="margin-top:15px;">重設羽球比分</button>
     </div>
 
-    <div id="calc" class="container"><h2>🧮 計算機</h2><div class="calc-screen" id="calcDisplay">0</div><div class="calc-grid"><button onclick="cClear()" class="btn-maroon">AC</button><button onclick="cIn('(')">(</button><button onclick="cIn(')')">)</button><button onclick="cIn('/')" class="btn-maroon">÷</button><button onclick="cIn('7')">7</button><button onclick="cIn('8')">8</button><button onclick="cIn('9')">9</button><button onclick="cIn('*')" class="btn-maroon">×</button><button onclick="cIn('4')">4</button><button onclick="cIn('5')">5</button><button onclick="cIn('6')">6</button><button onclick="cIn('-')" class="btn-maroon">-</button><button onclick="cIn('1')">1</button><button onclick="cIn('2')">2</button><button onclick="cIn('3')">3</button><button onclick="cIn('+')" class="btn-maroon">+</button><button onclick="cIn('0')" style="grid-column: span 2">0</button><button onclick="cIn('.')">.</button><button onclick="cEval()" style="background: var(--led-red); color: white;">=</button></div></div>
-    <div id="tools" class="container"><h2>⏱️ 碼表</h2><div class="calc-screen" id="swDisp" style="text-align:center;">00:00.0000</div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"><button onclick="swStart()" id="swBtn">START</button><button onclick="swReset()" class="btn-maroon">RESET</button></div></div>
-    <div id="math" class="container"><h2>📈 函數作圖</h2><input type="text" id="mathInput" value="sin(x)*2"><canvas id="cv" width="600" height="300" style="background:#fff; width:100%; border:1px solid var(--primary-accent);"></canvas><button onclick="draw()">更新作圖</button></div>
-    <div id="dates" class="container"><h2>📅 日期推算</h2><input type="date" id="dStart"><input type="number" id="dPlus" placeholder="天數"><button onclick="dateCalc1()">求目標日期</button><div id="dRes1" class="calc-screen" style="font-size:1.5rem;">---</div></div>
+    <div id="tools" class="container">
+        <h2>⏱️ 精準碼表</h2>
+        <div class="calc-screen" id="swDisp" style="text-align:center;">00:00.0000</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <button onclick="swStart()" id="swBtn">START</button>
+            <button onclick="swReset()" class="btn-maroon">RESET</button>
+        </div>
+        <h2>⏳ 倒數計時</h2>
+        <input type="number" id="cdInput" placeholder="輸入秒數">
+        <div class="calc-screen" id="cdDisp" style="text-align:center;">00:00:00</div>
+        <button onclick="cdStart()" id="cdBtn">開始倒數</button>
+    </div>
+
+    <div id="math" class="container">
+        <h2>📈 函數作圖 & 化簡</h2>
+        <input type="text" id="mathInput" value="2x + 5x - 3" placeholder="輸入算式，例如: (x+2)^2">
+        <button onclick="mathSimp()" class="btn-maroon">化簡方程式 / 表達式</button>
+        <div id="mathOut" class="calc-screen" style="font-size:1.5rem; text-align:center; display:flex; align-items:center; justify-content:center;">---</div>
+        <canvas id="cv" width="600" height="300" style="background:#fff; width:100%; border:1px solid var(--primary-accent); margin-top:20px;"></canvas>
+        <button onclick="draw()">更新作圖 (y = f(x))</button>
+    </div>
+
+    <div id="dates" class="container">
+        <h2>📅 經過天數求日期</h2>
+        <input type="date" id="dStart">
+        <input type="number" id="dPlus" placeholder="加上幾天">
+        <button onclick="dateCalc1()">求目標日期</button>
+        <div id="dRes1" class="calc-screen" style="font-size:1.5rem; text-align:center; display:flex; align-items:center; justify-content:center;">---</div>
+        
+        <h2>🗓️ 日期間隔 (求天數差)</h2>
+        <input type="date" id="g1">
+        <input type="date" id="g2">
+        <button onclick="dateCalc2()">計算天數差</button>
+        <div id="dRes2" class="calc-screen" style="font-size:1.5rem; text-align:center; display:flex; align-items:center; justify-content:center;">0 天</div>
+    </div>
 
     <button id="adminBtn" onclick="askAdmin()"></button>
 
@@ -169,7 +195,7 @@
 
         function toggleMode() { document.body.classList.toggle('light-mode'); }
 
-        // --- 時鐘 ---
+        // 時鐘
         function updateClock() {
             const now = new Date();
             document.getElementById('liveClock').innerText = now.toTimeString().split(' ')[0];
@@ -177,7 +203,7 @@
         }
         setInterval(updateClock, 1000);
 
-        // --- 籃球計分 ---
+        // 籃球
         let sA=0, sB=0, fA=0, fB=0, gt=720, gtRun=false, gtInt;
         function addB(t,p) { if(t=='A') sA+=p; else sB+=p; upB(); }
         function foul(t) { if(t=='A') fA++; else fB++; upB(); }
@@ -198,15 +224,15 @@
             document.getElementById('gtDisplay').innerText=`${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`; 
         }
 
-        // --- 羽球計分 (修正 NaN 問題) ---
-        let gA = 0, gB = 0; 
+        // 羽球 (修正 NaN)
+        let gA = 0, gB = 0;
         function gs(t,p) { 
             if(t=='A') { gA += p; document.getElementById('gA').innerText = gA; } 
             else { gB += p; document.getElementById('gB').innerText = gB; } 
         }
         function resetShuttle() { gA=0; gB=0; document.getElementById('gA').innerText=0; document.getElementById('gB').innerText=0; }
 
-        // --- 計算機 ---
+        // 計算機
         let cExp = "";
         function cIn(v) { cExp += v; document.getElementById('calcDisplay').innerText = cExp; }
         function cClear() { cExp = ""; document.getElementById('calcDisplay').innerText = "0"; }
@@ -215,7 +241,7 @@
             catch(e) { document.getElementById('calcDisplay').innerText = "Error"; cExp = ""; }
         }
 
-        // --- 碼表 ---
+        // 碼表
         let swOn=false, swStartT, swElapsed=0, swInt;
         function swStart() {
             const btn = document.getElementById('swBtn');
@@ -232,6 +258,60 @@
             swOn=!swOn;
         }
         function swReset() { clearInterval(swInt); swOn=false; swElapsed=0; document.getElementById('swDisp').innerText="00:00.0000"; }
+
+        // 倒數計時
+        let cdInt;
+        function cdStart() {
+            let sec = parseInt(document.getElementById('cdInput').value);
+            if(isNaN(sec)) return;
+            clearInterval(cdInt);
+            cdInt = setInterval(() => {
+                if(sec <= 0) { clearInterval(cdInt); alert("時間到！"); return; }
+                sec--;
+                let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60;
+                document.getElementById('cdDisp').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            }, 1000);
+        }
+
+        // 數學化簡與繪圖
+        function mathSimp() {
+            try { document.getElementById('mathOut').innerText = math.simplify(document.getElementById('mathInput').value).toString(); }
+            catch(e) { document.getElementById('mathOut').innerText = "無法化簡"; }
+        }
+        function draw() {
+            const c=document.getElementById('cv'), ctx=c.getContext('2d');
+            const exp = document.getElementById('mathInput').value;
+            ctx.clearRect(0,0,600,300);
+            ctx.strokeStyle='#ddd'; ctx.beginPath(); ctx.moveTo(0,150); ctx.lineTo(600,150); ctx.moveTo(300,0); ctx.lineTo(300,300); ctx.stroke();
+            ctx.strokeStyle='#ff4444'; ctx.lineWidth=2; ctx.beginPath();
+            try {
+                const node = math.compile(exp);
+                for(let i=0; i<600; i++) {
+                    let x = (i-300)/20;
+                    let y = node.evaluate({x:x});
+                    if(i==0) ctx.moveTo(i, 150-(y*20)); else ctx.lineTo(i, 150-(y*20));
+                }
+                ctx.stroke();
+            } catch(e){}
+        }
+
+        // 日期計算
+        function dateCalc1() {
+            let d = new Date(document.getElementById('dStart').value);
+            let p = parseInt(document.getElementById('dPlus').value);
+            if(!isNaN(d.getTime()) && !isNaN(p)) {
+                d.setDate(d.getDate() + p);
+                document.getElementById('dRes1').innerText = d.toLocaleDateString();
+            }
+        }
+        function dateCalc2() {
+            let d1 = new Date(document.getElementById('g1').value);
+            let d2 = new Date(document.getElementById('g2').value);
+            if(!isNaN(d1.getTime()) && !isNaN(d2.getTime())) {
+                let diff = Math.abs(Math.ceil((d2 - d1) / (1000 * 60 * 60 * 24)));
+                document.getElementById('dRes2').innerText = diff + " 天";
+            }
+        }
 
         updateClock();
         document.getElementById('dStart').valueAsDate = new Date();
