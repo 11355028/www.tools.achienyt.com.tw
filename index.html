@@ -23,7 +23,8 @@
             --card-bg: #ffffff;
             --text-color: #2d2424;
             --border-color: #d3cccc;
-            --clock-color: #5D4037; /* 淺色模式：深咖啡色 */
+            --secondary-accent: #0077be; /* 淺色模式：調深後的藍色 */
+            --clock-color: #795548; /* 淺色模式：棕色 */
         }
 
         body {
@@ -60,7 +61,7 @@
         .container.active { display: block; }
 
         /* 首頁巨大時鐘 */
-      /* 修改這幾行來校正置中與顏色 */
+        /* 修改這幾行來校正置中與顏色 */
         #home { 
             text-align: center; 
             background: transparent; 
@@ -74,7 +75,7 @@
             max-width: none;      /* 移除首頁容器限制 */
         }
 
-       .huge-clock { 
+        .huge-clock { 
             font-size: clamp(4rem, 18vw, 12rem); 
             font-weight: 900; 
             font-family: Arial, sans-serif; 
