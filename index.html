@@ -11,11 +11,12 @@
             --bg-color: #1a1515;
             --card-bg: #2d2424;
             --text-color: #ffffff;
-            --primary-accent: #a52a2a; /* 棕紅 */
+            --primary-accent: #cc3333; /* 調亮後的紅棕色 */
             --secondary-accent: #00d2ff; /* 亮藍 */
             --border-color: #4a3b3b;
             --led-red: #ff4d4d;
             --clock-color: #FFFF00; /* 深色模式：黃色 */
+            --btn-text: #000000;    /* 深色模式下的按鈕字色改為黑色 */
         }
 
         body.light-mode {
@@ -23,8 +24,9 @@
             --card-bg: #ffffff;
             --text-color: #2d2424;
             --border-color: #d3cccc;
-            --secondary-accent: #0077be; /* 淺色模式：調深後的藍色 */
-            --clock-color: #795548; /* 淺色模式：棕色 */
+            --secondary-accent: #0077be; /* 淺色模式：深藍色 */
+            --clock-color: #795548;      /* 淺色模式：棕色 */
+            --btn-text: #ffffff;         /* 淺色模式下深藍按鈕配白字 */
         }
 
         body {
@@ -48,7 +50,7 @@
             cursor: pointer; font-weight: bold; color: #fff;
         }
 
-        .nav-item.active { background: var(--primary-accent); color: #fff; }
+        .nav-item.active { background: var(--primary-accent); color: var(--btn-text); }
 
         /* 容器 */
         .container {
@@ -61,7 +63,6 @@
         .container.active { display: block; }
 
         /* 首頁巨大時鐘 */
-        /* 修改這幾行來校正置中與顏色 */
         #home { 
             text-align: center; 
             background: transparent; 
@@ -69,34 +70,35 @@
             padding-top: 10vh; 
             display: flex; 
             flex-direction: column; 
-            align-items: center;  /* 水平置中核心 */
+            align-items: center;
             justify-content: center;
-            width: 100%;          /* 強制容器滿寬 */
-            max-width: none;      /* 移除首頁容器限制 */
+            width: 100%;
+            max-width: none;
         }
 
         .huge-clock { 
             font-size: clamp(4rem, 18vw, 12rem); 
             font-weight: 900; 
             font-family: Arial, sans-serif; 
-            color: var(--clock-color); /* 這裡改用變數控制顏色 */
+            color: var(--clock-color);
             line-height: 1.1; 
             margin: 0 auto;
             display: block; 
             width: 100%;
             text-align: center;
             text-shadow: 3px 3px 0px var(--secondary-accent);
-            transition: color 0.3s; /* 讓顏色切換更平滑 */
+            transition: color 0.3s;
         }
 
         .huge-date { 
             font-size: 2.5rem; 
-            margin: 20px auto;    /* 自動間距置中 */
+            margin: 20px auto;
             font-weight: bold; 
             border-top: 2px solid var(--secondary-accent); 
             display: inline-block; 
             padding-top: 10px;
         }
+
         /* 元素樣式 */
         h2 { border-left: 8px solid var(--secondary-accent); padding-left: 12px; color: var(--primary-accent); }
         input, select {
@@ -105,10 +107,11 @@
         }
         button { 
             background: var(--secondary-accent); border: none; cursor: pointer; font-weight: bold; 
-            color: #000; padding: 14px; width: 100%; margin: 5px 0; transition: 0.2s;
+            color: var(--btn-text); 
+            padding: 14px; width: 100%; margin: 5px 0; transition: 0.2s;
         }
         button:hover { filter: brightness(1.1); transform: translateY(-2px); }
-        .btn-maroon { background: var(--primary-accent); color: #fff; }
+        .btn-maroon { background: var(--primary-accent); color: var(--btn-text); }
 
         /* 計算機與計分板 */
         .calc-screen { width: 100%; background: #000; color: var(--led-red); text-align: right; padding: 20px; font-size: 2.5rem; font-family: monospace; border: 2px solid var(--secondary-accent); margin-bottom: 10px; box-sizing: border-box; }
@@ -176,7 +179,7 @@
                 <button onclick="foul('A')" class="btn-maroon">犯規: <span id="fA">0</span></button>
             </div>
             <div style="display: flex; flex-direction: column; justify-content: space-around;">
-                <div id="pVal" style="background: var(--secondary-accent); color:#000; font-weight:bold;">第 1 節</div>
+                <div id="pVal" style="background: var(--secondary-accent); color:var(--btn-text); font-weight:bold;">第 1 節</div>
                 <div id="gtDisplay" style="font-size: 2rem; color: var(--led-red); font-family: monospace;">12:00</div>
                 <button onclick="gtToggle()" id="gtBtn">START</button>
             </div>
