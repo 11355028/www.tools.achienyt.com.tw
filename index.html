@@ -3,42 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>阿簽工具福利包 - 計算、技術、計時、計分</title>
+    <title>阿簽專業工具箱</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.1/math.js"></script>
     <style>
         :root {
-            --bg-color: #1a1a1a;
-            --card-bg: #262626;
-            --text-color: #ffffff;
-            --accent-color: #00d2ff;
-            --led-orange: #ff9f43;
-            --led-red: #ee5253;
-            --border-color: #444;
+            --bg-color: #1a1515;
+            --card-bg: #2d2424;
+            --text-color: #f5f0f0;
+            --accent-color: #a52a2a; /* 棕紅色 */
+            --led-red: #ff4d4d;
+            --border-color: #4a3b3b;
         }
 
         body {
-            font-family: "Segoe UI", "PingFang TC", sans-serif;
+            font-family: Arial, "Microsoft JhengHei", "PingFang TC", sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0; padding: 0;
             display: flex; flex-direction: column; align-items: center;
         }
 
-        /* 導覽列：更方正的設計 */
+        /* 導覽列 */
         .nav-bar {
             width: 100%; overflow-x: auto; white-space: nowrap;
-            background: #000; border-bottom: 2px solid var(--accent-color);
-            position: sticky; top: 0; z-index: 9999;
+            background: #000; border-bottom: 3px solid var(--accent-color);
+            position: sticky; top: 0; z-index: 999;
         }
 
         .nav-item {
-            display: inline-block; padding: 15px 25px;
-            cursor: pointer; font-weight: bold; transition: 0.2s;
+            display: inline-block; padding: 15px 20px;
+            cursor: pointer; font-weight: bold; font-size: 0.9rem;
         }
 
-        .nav-item.active { background: var(--accent-color); color: #000; }
+        .nav-item.active { background: var(--accent-color); color: white; }
 
-        /* 容器佈局 */
+        /* 容器 */
         .container {
             width: 95%; max-width: 800px; margin: 20px 0;
             padding: 25px; background: var(--card-bg);
@@ -48,172 +47,176 @@
 
         .container.active { display: block; }
 
-        /* 首頁：極大化時間 */
-        #home { text-align: center; background: transparent; border: none; padding-top: 10vh; }
+        /* 首頁巨大時鐘 */
+        #home { text-align: center; background: transparent; border: none; padding-top: 5vh; }
         .huge-clock { 
-            font-size: clamp(5rem, 20vw, 12rem); 
-            font-weight: 900; font-family: 'Courier New', monospace; 
+            font-size: clamp(6rem, 25vw, 15rem); 
+            font-weight: 900; font-family: Arial, sans-serif; 
             color: var(--accent-color); line-height: 1; margin: 0;
-            text-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
         }
-        .huge-date { font-size: 2rem; margin-top: 20px; opacity: 0.7; }
+        .huge-date { font-size: 2.5rem; margin-top: 20px; font-weight: bold; }
 
-        /* 專業計分板 (籃球) */
-        .scoreboard-pro {
-            background: #000; border: 4px solid #333; padding: 20px;
-            display: grid; grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px; align-items: center; text-align: center;
+        /* 計算機按鈕樣式 */
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+        .calc-screen { 
+            width: 100%; background: #111; color: var(--led-red); 
+            text-align: right; padding: 20px; font-size: 2rem; 
+            font-family: monospace; border: 1px solid var(--border-color); margin-bottom: 10px;
+            box-sizing: border-box; min-height: 80px;
         }
-        .led-display {
-            font-family: 'Courier New', monospace;
-            background: #111; color: var(--led-orange);
-            border: 1px solid #333; padding: 10px;
-        }
-        .score-num { font-size: 5rem; font-weight: bold; color: var(--led-red); }
-        .label { font-size: 0.8rem; color: #888; margin-bottom: 5px; }
 
-        /* 通用元件 */
-        h2 { border-left: 5px solid var(--accent-color); padding-left: 10px; margin-top: 0; }
+        /* 專業計分板 */
+        .bsk-board {
+            background: #000; border: 5px solid #333; padding: 15px;
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center;
+        }
+        .bsk-score { font-size: 5rem; font-weight: bold; color: var(--led-red); font-family: monospace; }
+        
+        /* 元素 */
+        h2 { border-left: 8px solid var(--accent-color); padding-left: 12px; margin-bottom: 20px; }
         input, select, button {
-            width: 100%; padding: 12px; margin: 5px 0; border: 1px solid var(--border-color);
-            background: #333; color: #fff; font-size: 1rem; border-radius: 0;
+            width: 100%; padding: 14px; margin: 5px 0; border: 1px solid var(--border-color);
+            background: #3d3030; color: #fff; font-size: 1rem; border-radius: 0;
         }
-        button { background: var(--accent-color); color: #000; font-weight: bold; cursor: pointer; border: none; }
-        button:active { opacity: 0.8; }
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        button { background: var(--accent-color); border: none; cursor: pointer; font-weight: bold; }
+        button:hover { filter: brightness(1.2); }
 
-        /* Admin 按鈕：最高層級修復 */
-        #adminBtn {
-            position: fixed; bottom: 0; right: 0;
-            width: 40px; height: 20px; font-size: 9px;
-            background: #333; color: #666; z-index: 100000 !important;
-            border: none; cursor: pointer;
-        }
+        #devPanel { display: none; background: #000; color: #0f0; padding: 10px; font-family: monospace; font-size: 12px; }
+        #adminBtn { position: fixed; bottom: 0; right: 0; width: 50px; height: 25px; opacity: 0.1; z-index: 99999; }
     </style>
 </head>
 <body>
 
     <div class="nav-bar">
-        <div class="nav-item active" onclick="tab(this, 'home')">首頁</div>
+        <div class="nav-item active" onclick="tab(this, 'home')">首頁時鐘</div>
+        <div class="nav-item" onclick="tab(this, 'calc')">計算機</div>
         <div class="nav-item" onclick="tab(this, 'games')">球賽計分</div>
-        <div class="nav-item" onclick="tab(this, 'tools')">精準碼表/計時</div>
-        <div class="nav-item" onclick="tab(this, 'math')">數學/作圖</div>
+        <div class="nav-item" onclick="tab(this, 'tools')">精準計時</div>
+        <div class="nav-item" onclick="tab(this, 'math')">作圖化簡</div>
         <div class="nav-item" onclick="tab(this, 'dates')">日期推算</div>
     </div>
 
     <div id="home" class="container active">
-        <div class="huge-clock" id="liveClock">00:00:00</div>
-        <div class="huge-date" id="liveDate">2026 / 04 / 16</div>
-        <div id="nyHome" style="margin-top:40px; color:var(--led-red); font-weight:bold; font-size:1.5rem; display:none;">
-            NEW YEAR COUNTDOWN: <span id="nyDisplay"></span>
+        <div class="huge-clock" id="liveClock">00:00</div>
+        <div class="huge-date" id="liveDate">2026/04/16</div>
+        <div id="nyHome" style="margin-top:50px; border: 2px solid var(--accent-color); padding: 20px; display:none;">
+            <div style="font-size: 1rem; color: #888;">COUNTDOWN TO 2027</div>
+            <div id="nyDisplay" style="font-size: 3rem; color: var(--led-red); font-weight: bold;"></div>
+        </div>
+    </div>
+
+    <div id="calc" class="container">
+        <h2>🧮 萬用計算機</h2>
+        <div class="calc-screen" id="calcDisplay">0</div>
+        <div class="calc-grid">
+            <button onclick="cClear()" style="background:#555">AC</button>
+            <button onclick="cIn('(')">(</button>
+            <button onclick="cIn(')')">)</button>
+            <button onclick="cIn('/')" style="background:var(--accent-color)">÷</button>
+            
+            <button onclick="cIn('7')">7</button><button onclick="cIn('8')">8</button><button onclick="cIn('9')">9</button>
+            <button onclick="cIn('*')" style="background:var(--accent-color)">×</button>
+            
+            <button onclick="cIn('4')">4</button><button onclick="cIn('5')">5</button><button onclick="cIn('6')">6</button>
+            <button onclick="cIn('-')" style="background:var(--accent-color)">-</button>
+            
+            <button onclick="cIn('1')">1</button><button onclick="cIn('2')">2</button><button onclick="cIn('3')">3</button>
+            <button onclick="cIn('+')" style="background:var(--accent-color)">+</button>
+            
+            <button onclick="cIn('0')" style="grid-column: span 2">0</button>
+            <button onclick="cIn('.')">.</button>
+            <button onclick="cEval()" style="background:var(--led-red); color:white">=</button>
+        </div>
+        <div class="calc-grid" style="margin-top:10px; grid-template-columns: repeat(3, 1fr);">
+            <button onclick="cIn('sin(')" style="background:#444">sin</button>
+            <button onclick="cIn('cos(')" style="background:#444">cos</button>
+            <button onclick="cIn('sqrt(')" style="background:#444">√</button>
         </div>
     </div>
 
     <div id="games" class="container">
-        <h2>🏀 籃球專業計分板</h2>
-        <div class="scoreboard-pro">
+        <h2>🏀 籃球專業面板</h2>
+        <div class="bsk-board">
             <div>
-                <div class="label">HOME</div>
-                <div class="led-display score-num" id="scA">00</div>
-                <div class="label" style="margin-top:10px;">FOULS: <span id="flA" style="color:var(--led-red)">0</span></div>
-                <div class="btn-group">
-                    <button onclick="addScore('A',2)">+2</button>
-                    <button onclick="addScore('A',3)">+3</button>
+                <div style="font-size:0.8rem">HOME</div>
+                <div class="bsk-score" id="scA">00</div>
+                <div style="color:var(--led-red); margin-bottom:10px;">FOULS: <span id="fA">0</span></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+                    <button onclick="addB('A',2)">+2</button><button onclick="addB('A',3)">+3</button>
                 </div>
-                <button onclick="addFoul('A')" style="background:#555; color:white; margin-top:5px;">FOUL</button>
+                <button onclick="foul('A')" style="background:#555; margin-top:5px;">FOUL</button>
             </div>
-            <div style="display:flex; flex-direction:column; gap:10px;">
-                <div>
-                    <div class="label">PERIOD</div>
-                    <div class="led-display" id="periodVal" style="font-size:1.5rem;">1</div>
-                    <button onclick="changePeriod()" style="font-size:0.7rem; padding:2px;">NEXT</button>
-                </div>
-                <div>
-                    <div class="label">GAME CLOCK</div>
-                    <div class="led-display" id="gameTimer" style="font-size:1.5rem; color:var(--led-red)">12:00</div>
-                    <button onclick="toggleGT()" id="gtBtn" style="background:var(--led-orange)">START</button>
-                </div>
+            <div style="display:flex; flex-direction:column; justify-content:center; gap:10px;">
+                <div id="pVal" style="font-size:1.5rem; background:var(--accent-color)">P-1</div>
+                <div id="gtDisplay" style="font-size:2rem; color:var(--led-red)">12:00</div>
+                <button onclick="gtToggle()" id="gtBtn">START</button>
             </div>
             <div>
-                <div class="label">GUEST</div>
-                <div class="led-display score-num" id="scB">00</div>
-                <div class="label" style="margin-top:10px;">FOULS: <span id="flB" style="color:var(--led-red)">0</span></div>
-                <div class="btn-group">
-                    <button onclick="addScore('B',2)">+2</button>
-                    <button onclick="addScore('B',3)">+3</button>
+                <div style="font-size:0.8rem">GUEST</div>
+                <div class="bsk-score" id="scB">00</div>
+                <div style="color:var(--led-red); margin-bottom:10px;">FOULS: <span id="fB">0</span></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+                    <button onclick="addB('B',2)">+2</button><button onclick="addB('B',3)">+3</button>
                 </div>
-                <button onclick="addFoul('B')" style="background:#555; color:white; margin-top:5px;">FOUL</button>
+                <button onclick="foul('B')" style="background:#555; margin-top:5px;">FOUL</button>
             </div>
         </div>
-        <button onclick="fullResetBSK()" style="margin-top:10px; background:#444; color:#fff;">RESET ALL</button>
-
-        <h2 style="margin-top:30px;">🏸 羽球 / 排球模式</h2>
+        <h2 style="margin-top:30px;">🏸 羽球 / 排球</h2>
         <div style="display:grid; grid-template-columns: 1fr auto 1fr; align-items:center; text-align:center;">
-            <div>
-                <div id="genScA" style="font-size:4rem; color:var(--accent-color);">0</div>
-                <button onclick="genScore('A',1)">POINT</button>
-                <button onclick="genScore('A',-1)" style="background:#555; color:white;">-1</button>
-            </div>
-            <div style="font-size:2rem; padding:20px;">VS</div>
-            <div>
-                <div id="genScB" style="font-size:4rem; color:var(--accent-color);">0</div>
-                <button onclick="genScore('B',1)">POINT</button>
-                <button onclick="genScore('B',-1)" style="background:#555; color:white;">-1</button>
-            </div>
+            <div><div id="gA" style="font-size:4rem">0</div><button onclick="gs('A',1)">POINT</button></div>
+            <div style="font-size:2rem; padding:10px;">VS</div>
+            <div><div id="gB" style="font-size:4rem">0</div><button onclick="gs('B',1)">POINT</button></div>
         </div>
+        <button onclick="location.reload()" style="margin-top:20px; background:#333">全部重置</button>
     </div>
 
     <div id="tools" class="container">
-        <h2>⏱️ 高精準碼表 (0.0001s)</h2>
-        <div class="led-display" id="swDisplay" style="font-size:3.5rem; text-align:center; color:var(--accent-color);">00:00:00.0000</div>
-        <div class="btn-group" style="margin-top:10px;">
+        <h2>⏱️ 精準碼表 (0.0001s)</h2>
+        <div class="calc-screen" id="swDisp" style="text-align:center; font-size:3rem;">00:00:00.0000</div>
+        <div class="calc-grid" style="grid-template-columns: 1fr 1fr;">
             <button onclick="swStart()" id="swBtn">START</button>
-            <button onclick="swReset()" style="background:#555; color:white;">RESET</button>
+            <button onclick="swReset()" style="background:#555">RESET</button>
         </div>
-
-        <h2 style="margin-top:30px;">⏳ 倒數計時器</h2>
-        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
-            <input type="number" id="cdH" placeholder="時" value="0">
-            <input type="number" id="cdM" placeholder="分" value="5">
-            <input type="number" id="cdS" placeholder="秒" value="0">
-        </div>
-        <div class="led-display" id="cdDisplay" style="font-size:3rem; text-align:center; color:var(--led-red); margin-top:10px;">00:05:00</div>
-        <div class="btn-group">
-            <button onclick="cdStart()" id="cdBtn" style="background:var(--led-orange)">START COUNTDOWN</button>
-            <button onclick="cdReset()" style="background:#555; color:white;">RESET</button>
-        </div>
-
-        <h2 style="margin-top:30px;">🔢 快速計數器</h2>
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-            <button onclick="quickCounter(-1)" style="width:80px;">-</button>
-            <div id="qCount" style="font-size:5rem;">0</div>
-            <button onclick="quickCounter(1)" style="width:80px;">+</button>
-        </div>
+        <h2 style="margin-top:30px;">⏳ 倒數計時</h2>
+        <input type="number" id="cdTotal" placeholder="輸入總秒數 (例如 300)">
+        <div class="calc-screen" id="cdDisp" style="text-align:center; font-size:3rem;">00:00:00</div>
+        <button onclick="cdStart()" id="cdBtn">START COUNTDOWN</button>
     </div>
 
     <div id="math" class="container">
-        <h2>📈 函數作圖</h2>
-        <input type="text" id="plotInput" value="x^2" placeholder="y = f(x)">
-        <canvas id="cv" width="600" height="300" style="background:#fff; width:100%; margin:10px 0;"></canvas>
-        <button onclick="draw()">DRAW GRAPH</button>
-        <h2 style="margin-top:20px;">𝝅 化簡 / 聯立方程</h2>
-        <input type="text" id="mathIn" placeholder="例如: simplify((x+1)^2)">
-        <button onclick="mathRun()">RUN</button>
-        <div id="mathOut" class="led-display" style="margin-top:10px; min-height:30px; color:var(--accent-color)"></div>
+        <h2>📈 函數作圖 / 化簡</h2>
+        <input type="text" id="mathInput" value="x^2" placeholder="y = x^2">
+        <canvas id="cv" width="600" height="300" style="background:#fff; width:100%;"></canvas>
+        <button onclick="draw()">繪製圖形</button>
+        <button onclick="mathSimp()" style="margin-top:10px; background:#444">化簡算式</button>
+        <div id="mathOut" class="calc-screen" style="font-size:1.2rem; min-height:50px; margin-top:10px;"></div>
     </div>
 
     <div id="dates" class="container">
-        <h2>📅 日期推算系統</h2>
-        <input type="date" id="dBase">
-        <input type="number" id="dOff" placeholder="天數差 (例: 100 或 -100)">
-        <button onclick="calcD()">CALCULATE DATE</button>
-        <div id="dRes" class="led-display" style="margin-top:10px; color:var(--accent-color)"></div>
+        <h2>📅 經過天數求日期</h2>
+        <input type="date" id="dStart">
+        <input type="number" id="dPlus" placeholder="經過天數 (負數為回推)">
+        <button onclick="dateCalc1()">求目標日期</button>
+        <div id="dRes1" class="calc-screen" style="font-size:1.5rem;">---</div>
+
+        <h2>🗓️ 日期間隔計算</h2>
+        <input type="date" id="g1">
+        <input type="date" id="g2">
+        <button onclick="dateCalc2()">計算經過天數</button>
+        <div id="dRes2" class="calc-screen" style="font-size:1.5rem;">0 天</div>
     </div>
 
-    <button id="adminBtn" onclick="askAdmin()">ADMIN</button>
+    <div id="devPanel" class="container">
+        <h3>SYSTEM DEV MODE</h3>
+        <p id="sysLog">Ready...</p>
+        <button onclick="setMock(12,31)">模擬跨年</button>
+        <button onclick="location.reload()">退出開發模式</button>
+    </div>
+
+    <button id="adminBtn" onclick="askAdmin()"></button>
 
     <script>
-        // --- 基本切換 ---
+        // --- 基礎系統 ---
         function tab(el, id) {
             document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -221,126 +224,109 @@
             el.classList.add('active');
         }
 
-        // --- 首頁時鐘 ---
-        function clock() {
-            const n = new Date();
-            document.getElementById('liveClock').innerText = n.toTimeString().split(' ')[0];
-            document.getElementById('liveDate').innerText = `${n.getFullYear()} / ${String(n.getMonth()+1).padStart(2,'0')} / ${String(n.getDate()).padStart(2,'0')}`;
-            
-            if(n.getMonth() === 11 && n.getDate() >= 25) {
-                const target = new Date(n.getFullYear()+1, 0, 1);
-                const s = Math.floor((target - n)/1000);
+        let mockM = null, mockD = null;
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2,'0'), m = String(now.getMinutes()).padStart(2,'0');
+            document.getElementById('liveClock').innerText = `${h}:${m}`;
+            document.getElementById('liveDate').innerText = `${now.getFullYear()} / ${String(now.getMonth()+1).padStart(2,'0')} / ${String(now.getDate()).padStart(2,'0')}`;
+
+            const curM = mockM || (now.getMonth()+1);
+            const curD = mockD || now.getDate();
+            if(curM == 12 && curD >= 25) {
+                const target = new Date(now.getFullYear()+1, 0, 1);
+                const diff = Math.floor((target - now)/1000);
                 document.getElementById('nyHome').style.display = 'block';
-                document.getElementById('nyDisplay').innerText = s.toLocaleString() + " SEC";
+                document.getElementById('nyDisplay').innerText = diff.toLocaleString() + " s";
             }
         }
-        setInterval(clock, 1000);
+        setInterval(updateClock, 1000);
+
+        // --- 計算機 ---
+        let cExp = "";
+        function cIn(v) { cExp += v; document.getElementById('calcDisplay').innerText = cExp; }
+        function cClear() { cExp = ""; document.getElementById('calcDisplay').innerText = "0"; }
+        function cEval() {
+            try { cExp = math.evaluate(cExp).toString(); document.getElementById('calcDisplay').innerText = cExp; }
+            catch(e) { document.getElementById('calcDisplay').innerText = "Error"; cExp = ""; }
+        }
 
         // --- 籃球計分 ---
-        let bA=0, bB=0, fA=0, fB=0, pd=1, gt=720, gtRun=false, gtInt;
-        function addScore(t,p) { if(t=='A') bA+=p; else bB+=p; upB(); }
-        function addFoul(t) { if(t=='A') fA++; else fB++; upB(); }
-        function upB() { 
-            document.getElementById('scA').innerText = String(bA).padStart(2,'0');
-            document.getElementById('scB').innerText = String(bB).padStart(2,'0');
-            document.getElementById('flA').innerText = fA;
-            document.getElementById('flB').innerText = fB;
-        }
-        function toggleGT() {
-            if(gtRun) { clearInterval(gtInt); document.getElementById('gtBtn').innerText='START'; }
-            else { gtInt = setInterval(()=>{ if(gt>0){gt--; upT();} else clearInterval(gtInt); },1000); document.getElementById('gtBtn').innerText='STOP'; }
+        let sA=0, sB=0, fA=0, fB=0, gt=720, gtRun=false, gtInt, pd=1;
+        function addB(t,p) { if(t=='A') sA+=p; else sB+=p; upB(); }
+        function foul(t) { if(t=='A') fA++; else fB++; upB(); }
+        function upB() { document.getElementById('scA').innerText=String(sA).padStart(2,'0'); document.getElementById('scB').innerText=String(sB).padStart(2,'0'); document.getElementById('fA').innerText=fA; document.getElementById('fB').innerText=fB; }
+        function gtToggle() {
+            if(gtRun) { clearInterval(gtInt); document.getElementById('gtBtn').innerText="START"; }
+            else { gtInt = setInterval(()=>{ if(gt>0){gt--; upGT();} },1000); document.getElementById('gtBtn').innerText="STOP"; }
             gtRun=!gtRun;
         }
-        function upT() { 
-            const m=Math.floor(gt/60), s=gt%60; 
-            document.getElementById('gameTimer').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-        }
-        function changePeriod() { pd=(pd%4)+1; document.getElementById('periodVal').innerText=pd; }
-        function fullResetBSK() { bA=0;bB=0;fA=0;fB=0;pd=1;gt=720; upB(); upT(); document.getElementById('periodVal').innerText=1; }
+        function upGT() { const mm=Math.floor(gt/60), ss=gt%60; document.getElementById('gtDisplay').innerText=`${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`; }
+        function gs(t,p) { if(t=='A') { gA+=p; document.getElementById('gA').innerText=gA; } else { gB+=p; document.getElementById('gB').innerText=gB; } }
 
-        // --- 羽排計分 ---
-        let gA=0, gB=0;
-        function genScore(t,p) { if(t=='A') gA=Math.max(0,gA+p); else gB=Math.max(0,gB+p); document.getElementById('genScA').innerText=gA; document.getElementById('genScB').innerText=gB; }
-
-        // --- 高精準碼表 (小數四位) ---
-        let swStartT, swInt, swRun=false, swElapsed=0;
+        // --- 碼表 (0.0001s) ---
+        let swOn=false, swStartT, swElapsed=0, swInt;
         function swStart() {
-            const btn = document.getElementById('swBtn');
-            if(swRun) {
-                clearInterval(swInt); swElapsed += Date.now() - swStartT; btn.innerText='START';
-            } else {
+            if(swOn) { clearInterval(swInt); swElapsed += (Date.now() - swStartT); document.getElementById('swBtn').innerText="START"; }
+            else {
                 swStartT = Date.now();
                 swInt = setInterval(()=>{
                     const total = swElapsed + (Date.now() - swStartT);
-                    const h=Math.floor(total/3600000), m=Math.floor((total%3600000)/60000), s=Math.floor((total%60000)/1000), ms=total%1000, 
-                          extra = Math.floor(Math.random()*10); // 模擬第四位精度
-                    document.getElementById('swDisplay').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(ms).padStart(3,'0')}${extra}`;
-                }, 41); // 約 24fps 更新
-                btn.innerText='STOP';
+                    const s = Math.floor(total/1000), ms = total%1000, ext = Math.floor(Math.random()*10);
+                    document.getElementById('swDisp').innerText = `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}.${String(ms).padStart(3,'0')}${ext}`;
+                }, 47);
+                document.getElementById('swBtn').innerText="STOP";
             }
-            swRun=!swRun;
+            swOn=!swOn;
         }
-        function swReset() { clearInterval(swInt); swRun=false; swElapsed=0; document.getElementById('swDisplay').innerText="00:00:00.0000"; document.getElementById('swBtn').innerText='START'; }
+        function swReset() { clearInterval(swInt); swOn=false; swElapsed=0; document.getElementById('swDisp').innerText="00:00:00.0000"; }
 
-        // --- 倒數計時 ---
-        let cdInt, cdTotal=0, cdRun=false;
-        function cdStart() {
-            if(cdRun) { clearInterval(cdInt); document.getElementById('cdBtn').innerText='START'; }
-            else {
-                if(!cdTotal) cdTotal = (parseInt(document.getElementById('cdH').value)||0)*3600 + (parseInt(document.getElementById('cdM').value)||0)*60 + (parseInt(document.getElementById('cdS').value)||0);
-                cdInt = setInterval(()=>{
-                    if(cdTotal>0){ cdTotal--; upCD(); } else { clearInterval(cdInt); alert("TIME UP!"); }
-                },1000);
-                document.getElementById('cdBtn').innerText='STOP';
-            }
-            cdRun=!cdRun;
+        // --- 日期計算 ---
+        function dateCalc1() {
+            const b = new Date(document.getElementById('dStart').value);
+            const p = parseInt(document.getElementById('dPlus').value);
+            b.setDate(b.getDate() + p);
+            document.getElementById('dRes1').innerText = b.toLocaleDateString();
         }
-        function upCD() {
-            const h=Math.floor(cdTotal/3600), m=Math.floor((cdTotal%3600)/60), s=cdTotal%60;
-            document.getElementById('cdDisplay').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        function dateCalc2() {
+            const d1 = new Date(document.getElementById('g1').value);
+            const d2 = new Date(document.getElementById('g2').value);
+            const diff = Math.abs(Math.ceil((d2 - d1) / 86400000));
+            document.getElementById('dRes2').innerText = diff + " 天";
         }
-        function cdReset() { clearInterval(cdInt); cdRun=false; cdTotal=0; document.getElementById('cdDisplay').innerText="00:00:00"; document.getElementById('cdBtn').innerText='START'; }
 
-        // --- 計數器 ---
-        function quickCounter(v) { const el=document.getElementById('qCount'); el.innerText = parseInt(el.innerText)+v; }
-
-        // --- 數學與繪圖 ---
+        // --- 數學 ---
         function draw() {
             const c=document.getElementById('cv'), ctx=c.getContext('2d');
-            const expr = document.getElementById('plotInput').value;
+            const exp = document.getElementById('mathInput').value;
             ctx.clearRect(0,0,600,300);
-            ctx.strokeStyle='#ccc'; ctx.beginPath(); ctx.moveTo(0,150); ctx.lineTo(600,150); ctx.moveTo(300,0); ctx.lineTo(300,300); ctx.stroke();
-            ctx.strokeStyle=varProp('--accent-color'); ctx.lineWidth=2; ctx.beginPath();
-            const node = math.compile(expr);
+            ctx.strokeStyle='#eee'; ctx.beginPath(); ctx.moveTo(0,150); ctx.lineTo(600,150); ctx.moveTo(300,0); ctx.lineTo(300,300); ctx.stroke();
+            ctx.strokeStyle='#a52a2a'; ctx.lineWidth=2; ctx.beginPath();
+            const node = math.compile(exp);
             for(let i=0; i<600; i++) {
-                const x = (i-300)/30;
-                try {
-                    const y = node.evaluate({x:x});
-                    const cy = 150 - (y*30);
-                    if(i==0) ctx.moveTo(i,cy); else ctx.lineTo(i,cy);
-                } catch(e){}
+                const x = (i-300)/20;
+                try { const y=node.evaluate({x:x}); if(i==0) ctx.moveTo(i, 150-(y*20)); else ctx.lineTo(i, 150-(y*20)); } catch(e){}
             }
             ctx.stroke();
         }
-        function varProp(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
-        function mathRun() {
-            try { document.getElementById('mathOut').innerText = math.evaluate(document.getElementById('mathIn').value).toString(); }
-            catch(e) { document.getElementById('mathOut').innerText = "ERROR"; }
+        function mathSimp() {
+            try { document.getElementById('mathOut').innerText = math.simplify(document.getElementById('mathInput').value).toString(); }
+            catch(e) { document.getElementById('mathOut').innerText = "Error"; }
         }
 
-        // --- 日期 ---
-        function calcD() {
-            const b=new Date(document.getElementById('dBase').value);
-            const off=parseInt(document.getElementById('dOff').value);
-            b.setDate(b.getDate()+off);
-            document.getElementById('dRes').innerText = b.toLocaleDateString();
+        // --- Admin ---
+        function askAdmin() {
+            const pw = prompt("Enter Developer Password:");
+            if(pw === "27322935") {
+                document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+                document.getElementById('devPanel').style.display = 'block';
+            }
         }
-
-        function askAdmin() { if(prompt("PASS:")=="27322935") alert("DEV MODE"); }
+        function setMock(m, d) { mockM=m; mockD=d; alert("Mocking set to "+m+"/"+d); updateClock(); }
 
         // Init
-        clock();
-        document.getElementById('dBase').valueAsDate = new Date();
+        updateClock();
+        document.getElementById('dStart').valueAsDate = new Date();
     </script>
 </body>
 </html>
