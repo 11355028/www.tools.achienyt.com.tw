@@ -11,12 +11,12 @@
             --bg-color: #1a1515;
             --card-bg: #2d2424;
             --text-color: #ffffff;
-            --primary-accent: #cc3333; /* 調亮後的紅棕色 */
+            --primary-accent: #ff4444; /* 再次調亮後的紅色 */
             --secondary-accent: #00d2ff; /* 亮藍 */
             --border-color: #4a3b3b;
             --led-red: #ff4d4d;
             --clock-color: #FFFF00; /* 深色模式：黃色 */
-            --btn-text: #000000;    /* 深色模式下的按鈕字色改為黑色 */
+            --btn-text: #000000;    /* 亮藍按鈕下的字色 */
         }
 
         body.light-mode {
@@ -50,7 +50,7 @@
             cursor: pointer; font-weight: bold; color: #fff;
         }
 
-        .nav-item.active { background: var(--primary-accent); color: var(--btn-text); }
+        .nav-item.active { background: var(--primary-accent); color: #ffffff; }
 
         /* 容器 */
         .container {
@@ -111,7 +111,12 @@
             padding: 14px; width: 100%; margin: 5px 0; transition: 0.2s;
         }
         button:hover { filter: brightness(1.1); transform: translateY(-2px); }
-        .btn-maroon { background: var(--primary-accent); color: var(--btn-text); }
+        
+        /* 紅色按鈕樣式 */
+        .btn-maroon { 
+            background: var(--primary-accent); 
+            color: #ffffff !important; /* 強制改為白字 */
+        }
 
         /* 計算機與計分板 */
         .calc-screen { width: 100%; background: #000; color: var(--led-red); text-align: right; padding: 20px; font-size: 2.5rem; font-family: monospace; border: 2px solid var(--secondary-accent); margin-bottom: 10px; box-sizing: border-box; }
@@ -336,7 +341,7 @@
             const exp = document.getElementById('mathInput').value;
             ctx.clearRect(0,0,600,300);
             ctx.strokeStyle='#ddd'; ctx.beginPath(); ctx.moveTo(0,150); ctx.lineTo(600,150); ctx.moveTo(300,0); ctx.lineTo(300,300); ctx.stroke();
-            ctx.strokeStyle='#a52a2a'; ctx.lineWidth=3; ctx.beginPath();
+            ctx.strokeStyle='#ff4444'; ctx.lineWidth=3; ctx.beginPath();
             try {
                 const node = math.compile(exp);
                 for(let i=0; i<600; i++) {
